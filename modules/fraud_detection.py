@@ -32,12 +32,13 @@ def run_fraud_detection(df):
     #--------------------ENCODING CATEGORICAL FEATURES INTO NUMERICAL FEATURES----------------------
     # Encoding category and type column to numerical column for better ML model
 
-    features = pd.get_dummies(
-    features,
-    columns=['category', 'type'],
-    drop_first=True
-    )
+    # Encode category as numbers
+    features['category_code'] = pd.Categorical(df['category']).codes
+ 
+    # Encode type: credit=0, debit=1
+    features['type_code'] = (df['type'] == 'debit').astype(int)
 
+    
     #--------------------SCALING TO NORMALIZE----------------------------------------------------
     # Scale features so amount does not dominate
 
@@ -59,14 +60,21 @@ def run_fraud_detection(df):
     model.fit(X)
 
     #----------------------PREDICTIONS & SCORING----------------------------------------------------
-    df['anamoly'] = model.predict(X)   # 1 = Normal | -1 = Fraud
+    predictions = model.predict(X)   # 1 = Normal | -1 = Fraud
+    df['anomoly'] = predictions
     raw_scores = model.score_samples(X) # more negative = more anamolous
 
     # Convert raw score to 0–100% risk score
     # Flip so higher % = higher risk
     min_s, max_s        = raw_scores.min(), raw_scores.max()
     df['risk_score']    = ((raw_scores - max_s) / (min_s - max_s) * 100).round(1)
-    df['is_fraud']      = df['anomaly'] == -1
+
+    # Create anomaly predictions if they don't exist
+    if 'anomaly' not in df.columns:
+      df['anomaly'] = model.predict(X)
+
+    # Create fraud flag
+    df['is_fraud'] = df['anomaly'] == -1
  
     return df
 
