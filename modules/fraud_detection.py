@@ -1,3 +1,4 @@
+# Import required libraries
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -12,26 +13,51 @@ def run_isolation_forest(df):
     to find additional anomalies beyond the pre-labeled ones.
     Returns df with added ml_risk_score and ml_is_fraud columns.
     """
+    # Create copy of the dataset
     df = df.copy().reset_index(drop=True)
 
+    #----------------------------------------------------------------------------------------------
+    #-------------------FEATURE  SELECTION-------------------------------------------------------
+    #----------------------------------------------------------------------------------------------
+    # Selecting features
     features = pd.DataFrame({
         'amount':       df['Amount'].values,
         'days_overdue': pd.to_numeric(df['Days_Overdue'], errors='coerce').fillna(0).values,
         'gst_rate':     pd.to_numeric(df['GST_Rate'], errors='coerce').fillna(0).values,
     })
 
+    #----------------------------------------------------------------------------------------------
+    #-------------------SCALING THE FEATURES-------------------------------------------------------
+    #----------------------------------------------------------------------------------------------
+    # Scaling to normalize
     scaler      = StandardScaler()
     X           = scaler.fit_transform(features)
+
+    #----------------------------------------------------------------------------------------------
+    #-------------------CREATING AND TRAING THE MODEL-------------------------------------------------------
+    #----------------------------------------------------------------------------------------------
+    # Model Creation
     model       = IsolationForest(contamination=0.08, random_state=42, n_estimators=100)
+    
+    # Model Training
     model.fit(X)
 
+    #----------------------------------------------------------------------------------------------
+    #-------------------PREDICTION AND SCORING-------------------------------------------------------
+    #----------------------------------------------------------------------------------------------
+    # Making predictions
     preds       = model.predict(X)
     raw         = model.score_samples(X)
     df['ml_risk_score'] = ((raw - raw.max()) / (raw.min() - raw.max()) * 100).round(1)
     df['ml_is_fraud']   = preds == -1
+
+
     return df
 
 
+#----------------------------------------------------------------------------------------------
+#-------------------MAIN PAGE FUNCTION-------------------------------------------------------
+#----------------------------------------------------------------------------------------------
 def show():
     st.title("🚨 Fraud & Anomaly Detection")
     st.markdown("*AI-powered transaction monitoring using Isolation Forest + pre-labeled risk data*")
