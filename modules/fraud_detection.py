@@ -1,386 +1,191 @@
-# Import required libraries
 import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
-import plotly.graph_objects as go
 from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
 
-#-----------------------------------------------
-#----FRAUD DETECTION MACHINE LEARNING MODEL-----
-#-----------------------------------------------
 
-def run_fraud_detection(df):
+def run_isolation_forest(df):
     """
-    Runs Isolation Forest on transaction data.
-    Adds 3 new columns to the dataframe:
-      - anomaly_score : raw score (lower = more suspicious)
-      - risk_score    : 0–100% risk (higher = more suspicious)
-      - is_fraud      : True / False flag
+    Runs Isolation Forest on financial_transactions data
+    to find additional anomalies beyond the pre-labeled ones.
+    Returns df with added ml_risk_score and ml_is_fraud columns.
     """
-    #-------------------CREATING COPY OF THE DATA-------------------------------------------------
-    df = df.copy()
+    df = df.copy().reset_index(drop=True)
 
-    #--------------------BUILDING FEATURES FOR THE MODEL-------------------------------------------
-    # Build features for the model
-    # Using amount, type, and category from sample_transactions
+    features = pd.DataFrame({
+        'amount':       df['Amount'].values,
+        'days_overdue': pd.to_numeric(df['Days_Overdue'], errors='coerce').fillna(0).values,
+        'gst_rate':     pd.to_numeric(df['GST_Rate'], errors='coerce').fillna(0).values,
+    })
 
-    features = pd.DataFrame()
-    features['amount'] = df["amount"]
-
-    #--------------------ENCODING CATEGORICAL FEATURES INTO NUMERICAL FEATURES----------------------
-    # Encoding category and type column to numerical column for better ML model
-
-    # Encode category as numbers
-    features['category_code'] = pd.Categorical(df['category']).codes
- 
-    # Encode type: credit=0, debit=1
-    features['type_code'] = (df['type'] == 'debit').astype(int)
-
-    
-    #--------------------SCALING TO NORMALIZE----------------------------------------------------
-    # Scale features so amount does not dominate
-
-    scaler = StandardScaler()
-    X = scaler.fit_transform(features)
-
-    #---------------------CREATE ISOLATION FOREST MODEL-------------------------------------------
-    # Train Isolation Forest Model
-    # contamination = expected % of fraud in data (5%)
-    
-    # Build the model
-    model = IsolationForest(
-        contamination=0.05,
-        n_estimators=100,
-        random_state=42
-    )
-
-    # Train the model 
+    scaler      = StandardScaler()
+    X           = scaler.fit_transform(features)
+    model       = IsolationForest(contamination=0.08, random_state=42, n_estimators=100)
     model.fit(X)
 
-    #----------------------PREDICTIONS & SCORING----------------------------------------------------
-    predictions = model.predict(X)   # 1 = Normal | -1 = Fraud
-    df['anomoly'] = predictions
-    raw_scores = model.score_samples(X) # more negative = more anamolous
-
-    # Convert raw score to 0–100% risk score
-    # Flip so higher % = higher risk
-    min_s, max_s        = raw_scores.min(), raw_scores.max()
-    df['risk_score']    = ((raw_scores - max_s) / (min_s - max_s) * 100).round(1)
-
-    # Create anomaly predictions if they don't exist
-    if 'anomaly' not in df.columns:
-      df['anomaly'] = model.predict(X)
-
-    # Create fraud flag
-    df['is_fraud'] = df['anomaly'] == -1
- 
+    preds       = model.predict(X)
+    raw         = model.score_samples(X)
+    df['ml_risk_score'] = ((raw - raw.max()) / (raw.min() - raw.max()) * 100).round(1)
+    df['ml_is_fraud']   = preds == -1
     return df
 
 
-#-----------------------------------------------------------------------------------------------------
-#--------------------------REASON GENERATOR-----------------------------------------------------------
-#-----------------------------------------------------------------------------------------------------
-
-def get_fraud_reason(row, df):
-    """
-    Gives a human-readable reason why a transaction was flagged.
-    """
-    reasons =[]
-
-    # Check if amount is unusually high
-    mean_amt = df['amount'].mean()
-    std_amt = df['amount'].std()
-
-    if row['amount'] > mean_amt + 2 * std_amt:
-        reasons.append("Unusually high amount")
-
-    # Check if amount is suspiciously round number
-    if row["amount"] % 100000 == 0:
-        reasons.append("Suspiciously round number")
-
-    # Check for duplicate amount
-    duplicates = df[df['amount'] == row['amount']]
-    if len(duplicates) > 2:
-        reasons.append("Duplicate amount detected")
-
-    # Check category mismatch (high credit in expense category)
-    if row['type'] == 'credit' and row['category'] in ['Rent', 'Tax', 'Utilities']:
-        reasons.append("Unusual credit in expense category")
-
-    return ", ".join(reasons) if reasons else 'Statistical Anamoly'
-
-
-#----------------------------------------------------------------------------------------------
-#-----------------------MAIN PAGE FUNCTION (STREAMLIT)-----------------------------------------------------
-#----------------------------------------------------------------------------------------------
-
 def show():
     st.title("🚨 Fraud & Anomaly Detection")
-    st.markdown("*AI-powered transaction monitoring using Isolation Forest*")
+    st.markdown("*AI-powered transaction monitoring using Isolation Forest + pre-labeled risk data*")
     st.markdown("---")
- 
-    # ── Get data from session state ──
-    df = st.session_state.get('transactions')
- 
-    if df is None:
-        st.warning("⚠️ No transaction data found. Please upload data first.")
+
+    # ── Get data ──────────────────────────────────────────
+    fraud_df = st.session_state.get('fraud_data')         # Fraud_Anomaly_Detection sheet
+    txn_df   = st.session_state.get('financial_transactions')  # Financial_Transactions sheet
+
+    if fraud_df is None or txn_df is None:
+        st.warning("⚠️ Data not loaded. Please run generate_data.py first.")
         return
- 
-    # ── TOP SECTION: Info + Run Button ──
-    col1, col2 = st.columns([2, 1])
- 
-    with col1:
-        st.markdown("""
-        **How it works:**
-        - Loads your transaction data
-        - Trains an ML model (Isolation Forest) on the spot
-        - Flags transactions that look statistically unusual
-        - Shows you exactly which ones to investigate
-        """)
- 
-    with col2:
-        st.markdown("<br>", unsafe_allow_html=True)
-        run_button = st.button(
-            "🔍 Run Fraud Detection",
-            use_container_width=True,
-            type="primary"
-        )
- 
-    st.markdown("---")
- 
-    # ── RUN MODEL when button clicked ──
-    if run_button or st.session_state.get('fraud_ran'):
- 
-        # Run only once, store result in session
-        if run_button or 'fraud_result' not in st.session_state:
-            with st.spinner("🤖 Training model and scanning transactions..."):
-                result_df = run_fraud_detection(df)
- 
-                # Add fraud reasons
-                result_df['reason'] = result_df.apply(
-                    lambda row: get_fraud_reason(row, result_df)
-                    if row['is_fraud'] else "—",
-                    axis=1
-                )
-                st.session_state['fraud_result'] = result_df
-                st.session_state['fraud_ran']    = True
- 
-        result_df = st.session_state['fraud_result']
- 
-        # Split into fraud and normal
-        fraud_df  = result_df[result_df['is_fraud'] == True].copy()
-        normal_df = result_df[result_df['is_fraud'] == False].copy()
- 
-        # ── SUMMARY CARDS ──
-        st.subheader("📊 Detection Summary")
+
+    # ── TABS: two views ───────────────────────────────────
+    tab1, tab2 = st.tabs(["🔴 Pre-labeled Fraud Alerts", "🤖 ML Anomaly Scanner"])
+
+    # ════════════════════════════════════════════════════
+    # TAB 1 — Pre-labeled Fraud Alerts (from Excel sheet)
+    # ════════════════════════════════════════════════════
+    with tab1:
+        st.subheader("Fraud Alerts from Dataset")
+
+        confirmed = fraud_df[fraud_df['is_fraud'] == True]
+        suspected = fraud_df[fraud_df['is_fraud'] == False]
+
         c1, c2, c3, c4 = st.columns(4)
- 
-        with c1:
-            st.metric(
-                label="Total Transactions",
-                value=f"{len(result_df):,}"
-            )
-        with c2:
-            st.metric(
-                label="✅ Safe",
-                value=f"{len(normal_df):,}",
-                delta=f"{(len(normal_df)/len(result_df)*100):.1f}%"
-            )
-        with c3:
-            st.metric(
-                label="🔴 Flagged",
-                value=f"{len(fraud_df):,}",
-                delta=f"-{(len(fraud_df)/len(result_df)*100):.1f}%",
-                delta_color="inverse"
-            )
-        with c4:
-            avg_risk = fraud_df['risk_score'].mean() if len(fraud_df) > 0 else 0
-            st.metric(
-                label="Avg Risk Score",
-                value=f"{avg_risk:.1f}%"
-            )
- 
+        c1.metric("Total Alerts",      len(fraud_df))
+        c2.metric("🔴 Confirmed Fraud", len(confirmed))
+        c3.metric("🟡 Suspected",       len(suspected))
+        c4.metric("Avg Risk Score",     f"{fraud_df['Risk_Score'].mean():.1f}/100")
+
         st.markdown("---")
- 
-        # ── CHARTS ROW ──
-        st.subheader("📈 Visual Analysis")
-        chart_col1, chart_col2 = st.columns(2)
- 
-        # Chart 1: Scatter Plot — Amount vs Date
-        with chart_col1:
-            st.markdown("**Transaction Amount vs Date**")
-            fig_scatter = px.scatter(
-                result_df,
-                x='date',
-                y='amount',
-                color='is_fraud',
-                color_discrete_map={
-                    True:  '#FF4B4B',   # red for fraud
-                    False: '#00C49A'    # green for normal
-                },
-                labels={
-                    'is_fraud': 'Fraud',
-                    'amount':   'Amount (₹)',
-                    'date':     'Date'
-                },
-                hover_data=['txn_id', 'category', 'risk_score'],
-                title="🔴 Flagged  |  🟢 Normal"
+
+        # Risk Score distribution
+        col1, col2 = st.columns(2)
+        with col1:
+            fig = px.histogram(
+                fraud_df, x='Risk_Score', color='ML_Prediction',
+                nbins=20, title="Risk Score Distribution",
+                color_discrete_map={'FRAUD': '#FF4B4B', 'LEGITIMATE': '#00C49A'},
+                labels={'Risk_Score': 'Risk Score (0-100)', 'ML_Prediction': 'Prediction'}
             )
-            fig_scatter.update_layout(
-                plot_bgcolor='rgba(0,0,0,0)',
-                paper_bgcolor='rgba(0,0,0,0)',
-                showlegend=True,
-                height=350
+            fig.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', height=320)
+            st.plotly_chart(fig, use_container_width=True)
+
+        with col2:
+            fig2 = px.scatter(
+                fraud_df, x='Txn_Amount', y='Risk_Score',
+                color='ML_Prediction', hover_data=['Alert_ID', 'Anomaly_Type', 'Action_Taken'],
+                title="Transaction Amount vs Risk Score",
+                color_discrete_map={'FRAUD': '#FF4B4B', 'LEGITIMATE': '#00C49A'},
+                labels={'Txn_Amount': 'Transaction Amount (₹)', 'Risk_Score': 'Risk Score'}
             )
-            st.plotly_chart(fig_scatter, use_container_width=True)
- 
-        # Chart 2: Risk Score Distribution
-        with chart_col2:
-            st.markdown("**Risk Score Distribution**")
-            fig_hist = px.histogram(
-                result_df,
-                x='risk_score',
-                color='is_fraud',
-                color_discrete_map={
-                    True:  '#FF4B4B',
-                    False: '#00C49A'
-                },
-                nbins=30,
-                labels={
-                    'risk_score': 'Risk Score (%)',
-                    'is_fraud':   'Fraud'
-                },
-                title="Distribution of Risk Scores"
-            )
-            fig_hist.update_layout(
-                plot_bgcolor='rgba(0,0,0,0)',
-                paper_bgcolor='rgba(0,0,0,0)',
-                height=350
-            )
-            st.plotly_chart(fig_hist, use_container_width=True)
- 
-        # Chart 3: Fraud by Category bar chart
-        st.markdown("**Fraud Count by Category**")
-        fraud_by_cat = (
-            fraud_df.groupby('category')
-            .size()
-            .reset_index(name='count')
-            .sort_values('count', ascending=False)
+            fig2.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', height=320)
+            st.plotly_chart(fig2, use_container_width=True)
+
+        # Anomaly Type breakdown
+        anomaly_counts = fraud_df.groupby('Anomaly_Type').size().reset_index(name='Count')
+        fig3 = px.bar(
+            anomaly_counts.sort_values('Count', ascending=False),
+            x='Anomaly_Type', y='Count', color='Count',
+            color_continuous_scale='Reds', title="Fraud by Anomaly Type"
         )
-        fig_bar = px.bar(
-            fraud_by_cat,
-            x='category',
-            y='count',
-            color='count',
-            color_continuous_scale='Reds',
-            labels={'category': 'Category', 'count': 'Flagged Count'},
-            title="Which categories have the most anomalies?"
-        )
-        fig_bar.update_layout(
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
-            height=300,
-            showlegend=False
-        )
-        st.plotly_chart(fig_bar, use_container_width=True)
- 
+        fig3.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                           height=280, showlegend=False)
+        st.plotly_chart(fig3, use_container_width=True)
+
         st.markdown("---")
- 
-        # ── FLAGGED TRANSACTIONS TABLE ──
-        st.subheader("🔴 Flagged Transactions — Investigate These")
- 
-        if len(fraud_df) > 0:
-            # Sort by risk score highest first
-            fraud_display = fraud_df[[
-                'txn_id', 'date', 'category',
-                'type', 'amount', 'risk_score', 'reason'
-            ]].sort_values('risk_score', ascending=False).copy()
- 
-            # Format columns
-            fraud_display['amount']     = fraud_display['amount'].apply(
-                                            lambda x: f"₹{x:,.0f}")
-            fraud_display['risk_score'] = fraud_display['risk_score'].apply(
-                                            lambda x: f"{x:.1f}%")
-            fraud_display['date']       = fraud_display['date'].astype(str)
- 
-            # Color code risk score column
+        st.subheader("🔴 Confirmed Fraud Cases")
+        if len(confirmed) > 0:
+            disp = confirmed[[
+                'Alert_ID', 'Date', 'Account_ID', 'Txn_Amount',
+                'Anomaly_Type', 'Risk_Score', 'Action_Taken', 'Resolved'
+            ]].sort_values('Risk_Score', ascending=False).copy()
+            disp['Txn_Amount'] = disp['Txn_Amount'].apply(lambda x: f"₹{x:,.0f}")
+            st.dataframe(disp, use_container_width=True, hide_index=True)
+
+            csv = confirmed.to_csv(index=False).encode('utf-8')
+            st.download_button("📥 Download Fraud Cases CSV", csv,
+                               'confirmed_fraud.csv', 'text/csv')
+
+    # ════════════════════════════════════════════════════
+    # TAB 2 — ML Isolation Forest on transactions
+    # ════════════════════════════════════════════════════
+    with tab2:
+        st.subheader("ML Anomaly Detection on Financial Transactions")
+        st.markdown("Runs **Isolation Forest** on the 200 financial transactions to find additional anomalies.")
+
+        run_btn = st.button("🔍 Run ML Detection", type="primary")
+
+        if run_btn or st.session_state.get('ml_fraud_ran'):
+            if run_btn or 'ml_fraud_result' not in st.session_state:
+                with st.spinner("Training Isolation Forest model..."):
+                    result = run_isolation_forest(txn_df)
+                    st.session_state['ml_fraud_result'] = result
+                    st.session_state['ml_fraud_ran']    = True
+
+            result    = st.session_state['ml_fraud_result']
+            flagged   = result[result['ml_is_fraud'] == True]
+            safe      = result[result['ml_is_fraud'] == False]
+
+            c1, c2, c3, c4 = st.columns(4)
+            c1.metric("Total Transactions", len(result))
+            c2.metric("✅ Safe",             len(safe))
+            c3.metric("🔴 Flagged",          len(flagged))
+            c4.metric("Avg Risk Score",      f"{flagged['ml_risk_score'].mean():.1f}%"
+                                             if len(flagged) > 0 else "0%")
+
+            st.markdown("---")
+
+            col1, col2 = st.columns(2)
+            with col1:
+                fig = px.scatter(
+                    result, x='Date', y='Amount',
+                    color='ml_is_fraud',
+                    color_discrete_map={True: '#FF4B4B', False: '#00C49A'},
+                    hover_data=['Txn_ID', 'Vendor/Client', 'ml_risk_score'],
+                    title="🔴 Flagged  |  🟢 Normal",
+                    labels={'ml_is_fraud': 'Anomaly', 'Amount': 'Amount (₹)'}
+                )
+                fig.update_layout(plot_bgcolor='rgba(0,0,0,0)',
+                                  paper_bgcolor='rgba(0,0,0,0)', height=320)
+                st.plotly_chart(fig, use_container_width=True)
+
+            with col2:
+                fig2 = px.histogram(
+                    result, x='ml_risk_score', color='ml_is_fraud',
+                    color_discrete_map={True: '#FF4B4B', False: '#00C49A'},
+                    nbins=25, title="ML Risk Score Distribution",
+                    labels={'ml_risk_score': 'Risk Score (%)', 'ml_is_fraud': 'Anomaly'}
+                )
+                fig2.update_layout(plot_bgcolor='rgba(0,0,0,0)',
+                                   paper_bgcolor='rgba(0,0,0,0)', height=320)
+                st.plotly_chart(fig2, use_container_width=True)
+
+            if len(flagged) > 0:
+                st.subheader("🔴 Flagged Transactions")
+                disp = flagged[[
+                    'Txn_ID', 'Date', 'Vendor/Client', 'Category',
+                    'Amount', 'Risk_Flag', 'Status', 'ml_risk_score'
+                ]].sort_values('ml_risk_score', ascending=False).copy()
+                disp['Amount'] = disp['Amount'].apply(lambda x: f"₹{x:,.0f}")
+                st.dataframe(disp.rename(columns={'ml_risk_score': 'ML Risk %'}),
+                             use_container_width=True, hide_index=True)
+
+                # Store summary for AI assistant
+                st.session_state['fraud_summary'] = (
+                    f"{len(flagged)} transactions flagged by ML out of {len(result)}. "
+                    f"Average ML risk score: {flagged['ml_risk_score'].mean():.1f}%."
+                )
+        else:
+            st.info("👆 Click **Run ML Detection** to scan transactions.")
             st.dataframe(
-                fraud_display.rename(columns={
-                    'txn_id':     'Transaction ID',
-                    'date':       'Date',
-                    'category':   'Category',
-                    'type':       'Type',
-                    'amount':     'Amount',
-                    'risk_score': 'Risk Score',
-                    'reason':     'Reason Flagged'
-                }),
-                use_container_width=True,
-                hide_index=True
+                txn_df[['Txn_ID', 'Date', 'Vendor/Client', 'Category',
+                        'Amount', 'Risk_Flag', 'Status']].head(10),
+                use_container_width=True, hide_index=True
             )
- 
-            # Download button for flagged transactions
-            csv = fraud_df.to_csv(index=False).encode('utf-8')
-            st.download_button(
-                label="📥 Download Flagged Transactions CSV",
-                data=csv,
-                file_name='flagged_transactions.csv',
-                mime='text/csv'
-            )
- 
-        else:
-            st.success("✅ No fraudulent transactions detected!")
- 
-        st.markdown("---")
- 
-        # ── AI INSIGHT BOX ──
-        st.subheader("💡 Quick Insights")
-        total        = len(result_df)
-        fraud_count  = len(fraud_df)
-        fraud_pct    = (fraud_count / total * 100)
-        top_category = (fraud_by_cat.iloc[0]['category']
-                        if len(fraud_by_cat) > 0 else "N/A")
-        top_amount   = fraud_df['amount'].max() if len(fraud_df) > 0 else 0
- 
-        if fraud_pct > 10:
-            risk_level = "🔴 High Risk"
-            advice     = "Immediate review recommended."
-        elif fraud_pct > 5:
-            risk_level = "🟡 Medium Risk"
-            advice     = "Monitor closely over next 30 days."
-        else:
-            risk_level = "🟢 Low Risk"
-            advice     = "Financials look healthy."
- 
-        st.info(f"""
-        **Fraud Analysis Summary:**
- 
-        - **{fraud_count}** out of **{total}** transactions flagged ({fraud_pct:.1f}%)
-        - Most suspicious category: **{top_category}**
-        - Highest flagged amount: **₹{top_amount:,.0f}**
-        - Overall risk level: **{risk_level}**
-        - Recommendation: {advice}
-        """)
- 
-        # Store fraud summary in session for AI assistant
-        st.session_state['fraud_summary'] = (
-            f"{fraud_count} transactions flagged out of {total} "
-            f"({fraud_pct:.1f}%). Most suspicious category: {top_category}. "
-            f"Highest flagged amount: ₹{top_amount:,.0f}. "
-            f"Risk level: {risk_level}."
-        )
- 
-    else:
-        # Before button is clicked — show placeholder
-        st.info("👆 Click **Run Fraud Detection** to scan your transactions.")
- 
-        # Show sample of raw data so page isn't empty
-        st.subheader("📋 Transaction Data Preview")
-        st.dataframe(
-            df.head(10)[[
-                'txn_id', 'date', 'category', 'type', 'amount'
-            ]],
-            use_container_width=True,
-            hide_index=True
-        )

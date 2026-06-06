@@ -1,0 +1,101 @@
+Compliance_ID,Regulation_Type,Applicable_To,Frequency,Due_Date,Submitted_Date,Status,Penalty_Risk (₹),Responsible_Person,Department,Priority
+CMP0001,GST Return (GSTR-1),Hindustan Unilever,Monthly,12-Feb-2025,12-Feb-2025,Compliant,0.0,Finance Controller,Tax,Critical
+CMP0002,PF Contribution,Nestle India,Monthly,06-Jul-2025,-,Pending,0.0,CA Ramesh Iyer,Accounting,High
+CMP0003,Income Tax Filing,Infosys Ltd,Monthly,20-Oct-2025,-,Pending,0.0,Finance Controller,Finance,Medium
+CMP0004,Advance Tax,Nestle India,Quarterly,16-Feb-2025,16-Feb-2025,Compliant,0.0,Finance Controller,Finance,Medium
+CMP0005,ESI Contribution,Hindustan Unilever,Monthly,27-Oct-2025,-,Pending,0.0,Tax Manager,Legal,Low
+CMP0006,Income Tax Filing,Wipro Ltd,Monthly,24-Feb-2025,24-Feb-2025,Compliant,0.0,CFO Priya Shah,Tax,Low
+CMP0007,PF Contribution,Tech Mahindra,Monthly,29-Oct-2025,29-Oct-2025,Compliant,0.0,Tax Manager,Compliance,Medium
+CMP0008,Labour Law Filing,Infosys Ltd,Monthly,12-Jun-2025,-,At Risk,0.0,Tax Manager,Accounting,High
+CMP0009,ROC Annual Return,Nestle India,Annual,16-Mar-2025,16-Mar-2025,Compliant,0.0,Tax Manager,Tax,Medium
+CMP0010,GST Return (GSTR-1),Maruti Suzuki,Monthly,07-Nov-2025,07-Nov-2025,Compliant,0.0,CA Ramesh Iyer,Legal,Medium
+CMP0011,Audit Report Submission,HDFC Bank,Annual,08-Jun-2025,-,Pending,0.0,Compliance Head,Finance,High
+CMP0012,Advance Tax,HDFC Bank,Quarterly,05-Jan-2025,05-Jan-2025,Non-Compliant,464116.16,Compliance Head,Tax,Critical
+CMP0013,Income Tax Filing,Tech Mahindra,Monthly,18-Apr-2025,18-Apr-2025,Compliant,0.0,Tax Manager,Tax,Low
+CMP0014,GST Return (GSTR-1),Tech Mahindra,Monthly,11-Feb-2025,11-Feb-2025,Non-Compliant,238190.19,Tax Manager,Tax,Low
+CMP0015,GST Return (GSTR-3B),Hindustan Unilever,Quarterly,24-Mar-2025,-,Pending,0.0,Compliance Head,Compliance,Critical
+CMP0016,ESI Contribution,HDFC Bank,Monthly,05-Nov-2025,-,Pending,0.0,Finance Controller,Tax,Low
+CMP0017,Labour Law Filing,Tata Consultancy,Monthly,27-Jan-2025,-,Pending,0.0,CFO Priya Shah,Accounting,High
+CMP0018,GST Return (GSTR-1),HDFC Bank,Monthly,13-Apr-2025,-,Pending,0.0,Compliance Head,Tax,Critical
+CMP0019,GST Return (GSTR-3B),Wipro Ltd,Quarterly,08-May-2025,-,At Risk,0.0,CFO Priya Shah,Compliance,Low
+CMP0020,ESI Contribution,ICICI Bank,Monthly,02-Sep-2025,-,Pending,0.0,CFO Priya Shah,Tax,High
+CMP0021,CSR Compliance,Asian Paints,Annual,17-Jun-2025,17-Jun-2025,Compliant,0.0,CFO Priya Shah,Finance,Low
+CMP0022,ESI Contribution,Wipro Ltd,Monthly,21-Jul-2025,21-Jul-2025,Non-Compliant,472654.79,Finance Controller,Legal,Critical
+CMP0023,GST Return (GSTR-1),Nestle India,Monthly,13-Oct-2025,-,Pending,0.0,Finance Controller,Legal,Critical
+CMP0024,Advance Tax,HCL Tech,Quarterly,15-May-2025,-,Pending,0.0,CFO Priya Shah,Finance,Low
+CMP0025,Transfer Pricing Report,HDFC Bank,Annual,04-Nov-2025,04-Nov-2025,Compliant,0.0,CFO Priya Shah,Finance,Medium
+CMP0026,TDS Return,Asian Paints,Annual,02-Mar-2025,02-Mar-2025,Compliant,0.0,Finance Controller,Accounting,Low
+CMP0027,CSR Compliance,ICICI Bank,Annual,02-Mar-2025,02-Mar-2025,Compliant,0.0,CFO Priya Shah,Legal,Medium
+CMP0028,ROC Annual Return,Sun Pharma,Annual,11-Sep-2025,11-Sep-2025,Non-Compliant,69448.67,CFO Priya Shah,Compliance,High
+CMP0029,ROC Annual Return,Sun Pharma,Annual,13-Dec-2025,13-Dec-2025,Compliant,0.0,Tax Manager,Legal,Low
+CMP0030,TDS Return,Tata Consultancy,Annual,29-May-2025,29-May-2025,Compliant,0.0,CFO Priya Shah,Compliance,Low
+CMP0031,Income Tax Filing,Reliance Ind,Monthly,26-Oct-2025,-,Pending,0.0,Tax Manager,Finance,Critical
+CMP0032,Advance Tax,Wipro Ltd,Quarterly,15-Jun-2025,-,Pending,0.0,Tax Manager,Legal,Low
+CMP0033,Labour Law Filing,HDFC Bank,Monthly,02-Nov-2025,02-Nov-2025,Compliant,0.0,CA Ramesh Iyer,Finance,Critical
+CMP0034,GST Return (GSTR-1),Reliance Ind,Monthly,01-May-2025,01-May-2025,Non-Compliant,454572.14,Finance Controller,Compliance,Critical
+CMP0035,GST Return (GSTR-1),Tech Mahindra,Monthly,16-Sep-2025,-,At Risk,0.0,Tax Manager,Tax,Low
+CMP0036,CSR Compliance,Reliance Ind,Annual,09-Mar-2025,-,At Risk,0.0,CA Ramesh Iyer,Compliance,High
+CMP0037,ROC Annual Return,Wipro Ltd,Annual,15-Sep-2025,15-Sep-2025,Non-Compliant,465511.84,Tax Manager,Legal,Critical
+CMP0038,ESI Contribution,Sun Pharma,Monthly,29-Sep-2025,29-Sep-2025,Non-Compliant,75188.89,CA Ramesh Iyer,Tax,Critical
+CMP0039,TDS Return,ICICI Bank,Annual,24-May-2025,-,Pending,0.0,Compliance Head,Accounting,Medium
+CMP0040,ROC Annual Return,Asian Paints,Annual,16-May-2025,-,At Risk,0.0,Compliance Head,Accounting,High
+CMP0041,ESI Contribution,Sun Pharma,Monthly,09-Sep-2025,09-Sep-2025,Compliant,0.0,Finance Controller,Accounting,Critical
+CMP0042,Income Tax Filing,Wipro Ltd,Monthly,28-Jan-2025,28-Jan-2025,Compliant,0.0,CFO Priya Shah,Finance,Low
+CMP0043,ROC Annual Return,Wipro Ltd,Annual,28-Dec-2025,28-Dec-2025,Non-Compliant,221032.78,Tax Manager,Finance,Low
+CMP0044,ESI Contribution,Sun Pharma,Monthly,15-Oct-2025,15-Oct-2025,Non-Compliant,231591.05,CA Ramesh Iyer,Legal,Critical
+CMP0045,ESI Contribution,Infosys Ltd,Monthly,15-Apr-2025,15-Apr-2025,Compliant,0.0,CFO Priya Shah,Legal,Medium
+CMP0046,Transfer Pricing Report,Nestle India,Annual,06-Dec-2025,-,At Risk,0.0,CFO Priya Shah,Compliance,Critical
+CMP0047,Audit Report Submission,ITC Ltd,Annual,20-Oct-2025,20-Oct-2025,Compliant,0.0,Tax Manager,Finance,High
+CMP0048,Advance Tax,Maruti Suzuki,Quarterly,18-Feb-2025,18-Feb-2025,Compliant,0.0,CA Ramesh Iyer,Tax,Critical
+CMP0049,PF Contribution,Reliance Ind,Monthly,30-Oct-2025,30-Oct-2025,Compliant,0.0,Compliance Head,Legal,Critical
+CMP0050,GST Return (GSTR-3B),ICICI Bank,Quarterly,29-Dec-2025,-,Pending,0.0,Tax Manager,Accounting,Medium
+CMP0051,Transfer Pricing Report,Maruti Suzuki,Annual,03-Jan-2025,03-Jan-2025,Compliant,0.0,CA Ramesh Iyer,Compliance,Low
+CMP0052,ESI Contribution,Sun Pharma,Monthly,19-Oct-2025,19-Oct-2025,Compliant,0.0,CFO Priya Shah,Finance,Medium
+CMP0053,ESI Contribution,ITC Ltd,Monthly,29-Jan-2025,-,Pending,0.0,CA Ramesh Iyer,Compliance,Low
+CMP0054,GST Return (GSTR-3B),HDFC Bank,Quarterly,11-May-2025,11-May-2025,Compliant,0.0,CFO Priya Shah,Accounting,Critical
+CMP0055,GST Return (GSTR-1),Hindustan Unilever,Monthly,17-Apr-2025,17-Apr-2025,Compliant,0.0,Tax Manager,Accounting,Medium
+CMP0056,CSR Compliance,ITC Ltd,Annual,01-Dec-2025,01-Dec-2025,Compliant,0.0,CA Ramesh Iyer,Tax,Low
+CMP0057,PF Contribution,Sun Pharma,Monthly,08-Jun-2025,-,Pending,0.0,Finance Controller,Legal,Medium
+CMP0058,CSR Compliance,Infosys Ltd,Annual,08-Jul-2025,-,At Risk,0.0,CFO Priya Shah,Accounting,Low
+CMP0059,PF Contribution,ICICI Bank,Monthly,18-May-2025,-,At Risk,0.0,Finance Controller,Accounting,Critical
+CMP0060,PF Contribution,ITC Ltd,Monthly,08-Jul-2025,-,At Risk,0.0,CFO Priya Shah,Accounting,Low
+CMP0061,GST Return (GSTR-3B),Tata Consultancy,Quarterly,20-Sep-2025,20-Sep-2025,Compliant,0.0,Tax Manager,Legal,High
+CMP0062,Advance Tax,Bajaj Finance,Quarterly,19-Nov-2025,-,Pending,0.0,Finance Controller,Finance,Medium
+CMP0063,Advance Tax,HDFC Bank,Quarterly,10-Feb-2025,10-Feb-2025,Non-Compliant,153694.66,CFO Priya Shah,Tax,High
+CMP0064,Audit Report Submission,HDFC Bank,Annual,01-Jun-2025,-,At Risk,0.0,CA Ramesh Iyer,Compliance,Critical
+CMP0065,GST Return (GSTR-1),Bajaj Finance,Monthly,25-Feb-2025,-,At Risk,0.0,Tax Manager,Accounting,Critical
+CMP0066,Advance Tax,Maruti Suzuki,Quarterly,19-Oct-2025,19-Oct-2025,Compliant,0.0,Compliance Head,Tax,Critical
+CMP0067,Audit Report Submission,Tata Consultancy,Annual,28-Feb-2025,-,Pending,0.0,Tax Manager,Legal,High
+CMP0068,PF Contribution,Tata Consultancy,Monthly,12-Feb-2025,12-Feb-2025,Non-Compliant,438993.9,Compliance Head,Tax,Low
+CMP0069,CSR Compliance,ICICI Bank,Annual,16-Nov-2025,16-Nov-2025,Compliant,0.0,Compliance Head,Legal,High
+CMP0070,TDS Return,Infosys Ltd,Annual,06-Nov-2025,06-Nov-2025,Compliant,0.0,CA Ramesh Iyer,Accounting,Critical
+CMP0071,GST Return (GSTR-1),HDFC Bank,Monthly,01-Mar-2025,01-Mar-2025,Compliant,0.0,CFO Priya Shah,Accounting,Low
+CMP0072,Labour Law Filing,HDFC Bank,Monthly,03-Dec-2025,-,Pending,0.0,Finance Controller,Accounting,Medium
+CMP0073,Transfer Pricing Report,Hindustan Unilever,Annual,12-Nov-2025,12-Nov-2025,Compliant,0.0,Tax Manager,Tax,Critical
+CMP0074,TDS Return,Wipro Ltd,Annual,08-Jan-2025,08-Jan-2025,Compliant,0.0,CA Ramesh Iyer,Finance,High
+CMP0075,GST Return (GSTR-1),HCL Tech,Monthly,04-Sep-2025,-,Pending,0.0,CFO Priya Shah,Legal,Low
+CMP0076,CSR Compliance,Hindustan Unilever,Annual,03-Oct-2025,03-Oct-2025,Compliant,0.0,CA Ramesh Iyer,Tax,Low
+CMP0077,TDS Return,ICICI Bank,Annual,05-Aug-2025,05-Aug-2025,Compliant,0.0,CA Ramesh Iyer,Legal,High
+CMP0078,Labour Law Filing,Sun Pharma,Monthly,16-Aug-2025,16-Aug-2025,Non-Compliant,238387.15,Tax Manager,Compliance,High
+CMP0079,Income Tax Filing,Tech Mahindra,Monthly,19-Oct-2025,19-Oct-2025,Non-Compliant,30206.48,CA Ramesh Iyer,Finance,Low
+CMP0080,PF Contribution,Hindustan Unilever,Monthly,11-Sep-2025,-,Pending,0.0,Finance Controller,Compliance,Medium
+CMP0081,GST Return (GSTR-1),ICICI Bank,Monthly,24-Jul-2025,24-Jul-2025,Non-Compliant,259111.08,Finance Controller,Accounting,High
+CMP0082,Labour Law Filing,Tata Consultancy,Monthly,28-Sep-2025,28-Sep-2025,Compliant,0.0,Tax Manager,Compliance,Medium
+CMP0083,Audit Report Submission,Infosys Ltd,Annual,18-May-2025,-,Pending,0.0,Tax Manager,Accounting,Critical
+CMP0084,Advance Tax,Asian Paints,Quarterly,27-Nov-2025,27-Nov-2025,Compliant,0.0,Tax Manager,Accounting,Critical
+CMP0085,TDS Return,Tech Mahindra,Annual,09-Apr-2025,09-Apr-2025,Non-Compliant,175204.46,CFO Priya Shah,Compliance,High
+CMP0086,Transfer Pricing Report,Nestle India,Annual,17-Dec-2025,17-Dec-2025,Compliant,0.0,Finance Controller,Accounting,High
+CMP0087,ROC Annual Return,Sun Pharma,Annual,31-Dec-2025,31-Dec-2025,Non-Compliant,480102.67,Compliance Head,Accounting,High
+CMP0088,Transfer Pricing Report,HCL Tech,Annual,25-May-2025,-,Pending,0.0,CA Ramesh Iyer,Accounting,High
+CMP0089,TDS Return,HCL Tech,Annual,22-Mar-2025,-,At Risk,0.0,Tax Manager,Finance,Low
+CMP0090,Advance Tax,Tech Mahindra,Quarterly,01-May-2025,01-May-2025,Compliant,0.0,Finance Controller,Finance,Critical
+CMP0091,ESI Contribution,Nestle India,Monthly,14-May-2025,14-May-2025,Compliant,0.0,CFO Priya Shah,Legal,Critical
+CMP0092,GST Return (GSTR-3B),Reliance Ind,Quarterly,09-Aug-2025,09-Aug-2025,Compliant,0.0,Finance Controller,Legal,Critical
+CMP0093,Audit Report Submission,HCL Tech,Annual,07-Sep-2025,07-Sep-2025,Compliant,0.0,Compliance Head,Tax,Critical
+CMP0094,Audit Report Submission,Tech Mahindra,Annual,19-Mar-2025,-,Pending,0.0,Finance Controller,Compliance,Critical
+CMP0095,Labour Law Filing,Tata Consultancy,Monthly,13-Aug-2025,13-Aug-2025,Non-Compliant,481510.32,CA Ramesh Iyer,Finance,Critical
+CMP0096,Audit Report Submission,Tata Consultancy,Annual,17-Sep-2025,17-Sep-2025,Compliant,0.0,CFO Priya Shah,Finance,High
+CMP0097,ESI Contribution,Wipro Ltd,Monthly,30-May-2025,-,Pending,0.0,Tax Manager,Compliance,Low
+CMP0098,Labour Law Filing,Hindustan Unilever,Monthly,20-Feb-2025,20-Feb-2025,Compliant,0.0,Compliance Head,Tax,High
+CMP0099,GST Return (GSTR-3B),Hindustan Unilever,Quarterly,14-Apr-2025,14-Apr-2025,Non-Compliant,484970.15,CA Ramesh Iyer,Legal,Low
+CMP0100,ESI Contribution,Tech Mahindra,Monthly,16-Sep-2025,16-Sep-2025,Compliant,0.0,CA Ramesh Iyer,Tax,Medium
