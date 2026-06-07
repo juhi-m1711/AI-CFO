@@ -52,7 +52,7 @@ def load_fraud_detection():
         'Risk_Score (0-100)':'Risk_Score'
     }, inplace=True)
     df['Risk_Score'] = pd.to_numeric(df['Risk_Score'], errors='coerce').fillna(0)
-    df['is_fraud']   = df['ML_Prediction'].str.upper() == 'FRAUD'
+    df['is_fraud'] = df['ML_Prediction'].str.strip().str.upper() == 'FRAUDULENT'
     return df
 
 @st.cache_data
@@ -96,6 +96,21 @@ def load_financial_intelligence():
         'YoY_Growth (%)':         'YoY_Growth',
         'Forecast_Accuracy (%)':  'Forecast_Accuracy'
     }, inplace=True)
+
+    # Inside load_financial_intelligence() — add after rename
+    df["Profit_Margin"] = pd.to_numeric(
+        df["Profit_Margin"].astype(str).str.replace("%", "").str.strip(),
+        errors="coerce"
+    )
+    df["YoY_Growth"] = pd.to_numeric(
+        df["YoY_Growth"].astype(str).str.replace("%", "").str.strip(),
+        errors="coerce"
+    )
+    df["Forecast_Accuracy"] = pd.to_numeric(
+        df["Forecast_Accuracy"].astype(str).str.replace("%", "").str.strip(),
+        errors="coerce"
+    )
+    
     # Prophet columns
     df['ds'] = df['Period']
     df['y']  = df['Revenue']
