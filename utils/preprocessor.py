@@ -38,17 +38,6 @@ def get_summary_for_ai(session):
             f" Total penalties ₹{penalty:,.0f}."
         )
 
-    # Fraud
-    fraud = session.get('fraud_data')
-    if fraud is not None and not fraud.empty:
-        total_alerts = len(fraud)
-        fraud_count  = fraud['is_fraud'].sum()
-        avg_risk     = fraud['Risk_Score'].mean()
-        parts.append(
-            f"Fraud: {total_alerts} alerts, {fraud_count} confirmed fraud cases,"
-            f" average risk score {avg_risk:.1f}/100."
-        )
-
     # Compliance
     comp = session.get('compliance_data')
     if comp is not None and not comp.empty:

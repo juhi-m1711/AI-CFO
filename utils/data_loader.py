@@ -28,10 +28,12 @@ def load_financial_transactions():
 @st.cache_data
 def load_gst_tax_management():
     df = pd.read_csv(_path('gst_tax_management.csv'))
-    df['Due_Date']  = pd.to_datetime(df['Due_Date'],  dayfirst=True, errors='coerce')
-    df['Filed_Date']= pd.to_datetime(df['Filed_Date'],dayfirst=True, errors='coerce')
+    df['Due_Date']   = pd.to_datetime(df['Due_Date'],   dayfirst=True, errors='coerce')
+    df['Filed_Date'] = pd.to_datetime(df['Filed_Date'], dayfirst=True, errors='coerce')
+
     for col in ['CGST (₹)', 'SGST (₹)', 'IGST (₹)', 'Total_GST (₹)', 'Penalty (₹)']:
         df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
+
     df.rename(columns={
         'CGST (₹)':      'CGST',
         'SGST (₹)':      'SGST',
@@ -39,21 +41,16 @@ def load_gst_tax_management():
         'Total_GST (₹)': 'Total_GST',
         'Penalty (₹)':   'Penalty'
     }, inplace=True)
+
+    # ── ADD THIS LINE ──
+    df["Compliance_Score"] = pd.to_numeric(
+        df["Compliance_Score"].astype(str).str.replace("%", "").str.strip(),
+        errors="coerce"
+    )
+    # ──────────────────
+
     return df
 
-@st.cache_data
-def load_fraud_detection():
-    df = pd.read_csv(_path('fraud_anomaly_detection.csv'))
-    df['Date'] = pd.to_datetime(df['Date'], dayfirst=True, errors='coerce')
-    df.rename(columns={
-        'Txn_Amount (₹)':    'Txn_Amount',
-        'Avg_Txn_Amt (₹)':   'Avg_Txn_Amt',
-        'Deviation (%)':     'Deviation',
-        'Risk_Score (0-100)':'Risk_Score'
-    }, inplace=True)
-    df['Risk_Score'] = pd.to_numeric(df['Risk_Score'], errors='coerce').fillna(0)
-    df['is_fraud'] = df['ML_Prediction'].str.strip().str.upper() == 'FRAUDULENT'
-    return df
 
 @st.cache_data
 def load_payroll():
@@ -120,12 +117,24 @@ def load_financial_intelligence():
 @st.cache_data
 def load_compliance():
     df = pd.read_csv(_path('compliance_tracking.csv'))
-    df['Due_Date']       = pd.to_datetime(df['Due_Date'],       dayfirst=True, errors='coerce')
-    df['Submitted_Date'] = pd.to_datetime(df['Submitted_Date'], dayfirst=True, errors='coerce')
-    df['Penalty_Risk (₹)'] = pd.to_numeric(
-        df['Penalty_Risk (₹)'].astype(str).str.replace(',',''), errors='coerce'
+
+    df['Due_Date'] = pd.to_datetime(
+        df['Due_Date'],
+        format='%d-%b-%y',
+        errors='coerce'
+    )
+
+    df['Submitted_Date'] = pd.to_datetime(
+        df['Submitted_Date'],
+        format='%d-%b-%y',
+        errors='coerce'
+    )
+
+    df['Penalty_Risk'] = pd.to_numeric(
+        df['Penalty_Risk'],
+        errors='coerce'
     ).fillna(0)
-    df.rename(columns={'Penalty_Risk (₹)': 'Penalty_Risk'}, inplace=True)
+
     return df
 
 def load_all_data():
@@ -133,7 +142,6 @@ def load_all_data():
     import streamlit as st
     st.session_state['financial_transactions']  = load_financial_transactions()
     st.session_state['gst_data']                = load_gst_tax_management()
-    st.session_state['fraud_data']              = load_fraud_detection()
     st.session_state['payroll_data']            = load_payroll()
     st.session_state['financial_intelligence']  = load_financial_intelligence()
     st.session_state['compliance_data']         = load_compliance()
